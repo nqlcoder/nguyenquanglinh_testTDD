@@ -12,6 +12,7 @@ import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -29,7 +30,24 @@ public class CustomerServiceTest {
     }
 
     @Test
-    public void testAddCustomer() {
+    public void testAddCustomer_EmailAlreadyExists() {
+        Customer customer = new Customer();
+        customer.setEmail("nql4901@gmail.com");
+
+        when(customerRepository.findByEmail(customer.getEmail())).thenReturn(Optional.of(customer));
+
+        try {
+            customerService.addCustomer(customer);
+            Assert.fail("Expected exception was not thrown");
+        } catch (Exception e) {
+            Assert.assertEquals(e.getMessage(), "Email đã tồn tại.");
+        }
+
+        verify(customerRepository, never()).save(customer);
+    }
+
+    @Test
+    public void testAddCustomer() throws Exception {
         Customer customer = new Customer();
         customer.setName("nql");
         customer.setCustomerNumber("123456");

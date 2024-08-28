@@ -31,7 +31,21 @@ public class CustomerControllerTest {
     }
 
     @Test
-    public void testAddCustomer() {
+    public void testAddCustomer_EmailAlreadyExists() throws Exception {
+        Customer customer = new Customer();
+        customer.setEmail("nql4901@gmail.com");
+
+        when(customerService.addCustomer(customer)).thenThrow(new Exception("Email đã tồn tại."));
+
+        ResponseEntity<?> response = customerController.addCustomer(customer);
+
+        Assert.assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+        Assert.assertEquals(response.getBody(), "Email đã tồn tại.");
+        verify(customerService, times(1)).addCustomer(customer);
+    }
+
+    @Test
+    public void testAddCustomer() throws Exception {
         Customer customer = new Customer();
         customer.setName("nql");
         customer.setCustomerNumber("123456");
